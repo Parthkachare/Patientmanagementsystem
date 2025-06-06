@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Update Patient | Healthcare System</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      padding: 2rem;
+    }
+    form {
+      background: white;
+      padding: 2rem;
+      max-width: 500px;
+      margin: auto;
+      border-radius: 8px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: 600;
+      color: #444;
+    }
+    input, select {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      margin-top: 0.3rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
+    }
+    input:focus, select:focus {
+      border-color: #0083b0;
+      outline: none;
+    }
+    .error-msg {
+      color: #d93025;
+      font-size: 0.9rem;
+      margin-top: 0.2rem;
+      display: none;
+    }
+    button {
+      margin-top: 1.8rem;
+      width: 100%;
+      padding: 0.9rem;
+      background-color: #0083b0;
+      border: none;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #005f7f;
+    }
+  </style>
+</head>
+<body>
+  <form id="updatePatientForm" novalidate>
+    <h2>Update Patient</h2>
+
+    <label for="patientId">Patient ID *</label>
+    <input type="text" id="patientId" name="patientId" value="IND001" readonly />
+
+    <label for="name">Full Name *</label>
+    <input type="text" id="name" name="name" value="John Doe" required />
+    <div class="error-msg" id="nameError">Name must be at least 3 characters.</div>
+
+    <label for="age">Age *</label>
+    <input type="number" id="age" name="age" min="0" max="120" value="35" required />
+    <div class="error-msg" id="ageError">Please enter a valid age (0-120).</div>
+
+    <label for="phone">Phone Number *</label>
+    <input type="tel" id="phone" name="phone" value="9876543210" required />
+    <div class="error-msg" id="phoneError">Please enter a valid 10-digit phone number.</div>
+
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" value="john@example.com" />
+    <div class="error-msg" id="emailError">Please enter a valid email address.</div>
+
+    <label for="gender">Gender *</label>
+    <select id="gender" name="gender" required>
+      <option value="">--Select Gender--</option>
+      <option value="Male" selected>Male</option>
+      <option value="Female">Female</option>
+      <option value="Other">Other</option>
+    </select>
+    <div class="error-msg" id="genderError">Please select a gender.</div>
+
+    <label for="condition">Condition *</label>
+    <input type="text" id="condition" name="condition" value="Diabetes" required />
+    <div class="error-msg" id="conditionError">Condition is required.</div>
+
+    <button type="submit">Update Patient</button>
+  </form>
+
+  <script>
+    const form = document.getElementById('updatePatientForm');
+
+    const isValidPhone = (phone) => /^[0-9]{10}$/.test(phone);
+    const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      document.querySelectorAll('.error-msg').forEach(el => el.style.display = 'none');
+
+      let valid = true;
+
+      const name = form.name.value.trim();
+      if (!name || name.length < 3) {
+        document.getElementById('nameError').style.display = 'block';
+        valid = false;
+      }
+
+      const age = Number(form.age.value);
+      if (isNaN(age) || age < 0 || age > 120) {
+        document.getElementById('ageError').style.display = 'block';
+        valid = false;
+      }
+
+      const phone = form.phone.value.trim();
+      if (!isValidPhone(phone)) {
+        document.getElementById('phoneError').style.display = 'block';
+        valid = false;
+      }
+
+      const email = form.email.value.trim();
+      if (email && !isValidEmail(email)) {
+        document.getElementById('emailError').style.display = 'block';
+        valid = false;
+      }
+
+      const gender = form.gender.value;
+      if (!gender) {
+        document.getElementById('genderError').style.display = 'block';
+        valid = false;
+      }
+
+      const condition = form.condition.value.trim();
+      if (!condition) {
+        document.getElementById('conditionError').style.display = 'block';
+        valid = false;
+      }
+
+      if (!valid) return;
+
+      const patientId = form.patientId.value.trim();
+      const patientData = { name, age, phone, email, gender, condition };
+
+      fetch(`/api/patients/${patientId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(patientData),
+      })
+      .then(async (res) => {
+        if (res.ok) {
+          alert('Patient updated successfully!');
+        } else {
+          const errData = await res.json();
+          alert('Error: ' + (errData.error || 'Failed to update patient'));
+        }
+      })
+      .catch(() => alert('Network error, please try again.'));
+    });
+  </script>
+</body>
+</html>

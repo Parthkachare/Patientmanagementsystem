@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Healthcare Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-900 text-white">
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <div class="w-64 bg-gray-800 p-6 space-y-6">
+      <h1 class="text-2xl font-bold mb-8">Dashboard</h1>
+      <nav class="space-y-4">
+        <a href="#" class="block text-white hover:text-blue-400">Dashboard</a>
+        <a href="#" class="block text-white hover:text-blue-400">Users</a>
+        <a href="#" class="block text-white hover:text-blue-400">Reports</a>
+        <a href="#" class="block text-white hover:text-blue-400">Settings</a>
+        <button id="logout-btn" class="block text-white hover:text-blue-400 bg-transparent border-none cursor-pointer p-0">
+  Logout
+</button>
+
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 p-8 space-y-6">
+      <h2 class="text-3xl font-bold">Healthcare Admin Dashboard</h2>
+
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-gray-800 p-6 rounded-xl shadow-md">
+          <h4 class="font-semibold text-lg">Total Users</h4>
+          <p class="text-2xl mt-2">2</p>
+        </div>
+        <div class="bg-gray-800 p-6 rounded-xl shadow-md">
+          <h4 class="font-semibold text-lg">Active Sessions</h4>
+          <p class="text-2xl mt-2">42</p>
+        </div>
+        <div class="bg-gray-800 p-6 rounded-xl shadow-md">
+          <h4 class="font-semibold text-lg">Reports Today</h4>
+          <p class="text-2xl mt-2">7</p>
+        </div>
+        <div class="bg-gray-800 p-6 rounded-xl shadow-md">
+          <h4 class="font-semibold text-lg">System Status</h4>
+          <p class="mt-2">All systems operational</p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-wrap gap-4">
+        <button id="insert-patient" class="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-500">Insert New Patient Record</button>
+        <button id="search-patient" class="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-500">Search Patient Record</button>
+        <button id="update-patient" class="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-500">Update Patient Record</button>
+        <button id="delete-patient" class="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-500">Delete Patient Record</button>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="flex items-center space-x-2">
+        <input type="text" placeholder="Search by name, ID, condition..." class="flex-1 px-4 py-2 rounded-lg text-black" />
+        <button id="search-bar-btn" class="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-500">Search</button>
+      </div>
+
+      <!-- Table Head -->
+      <div class="grid grid-cols-5 gap-4 font-semibold border-b border-gray-700 pb-2">
+        <div>Patient ID</div>
+        <div>Name</div>
+        <div>Age</div>
+        <div>Condition</div>
+        <div>Prescriptions</div>
+      </div>
+
+      <!-- Placeholder for table rows -->
+      <div class="mt-4">Patients per Condition</div>
+      <div class="bg-gray-800 p-6 rounded-xl mt-2">(Chart/Data goes here)</div>
+    </div>
+  </div>
+
+  <script>
+    // Patient record action buttons
+    document.getElementById('insert-patient').addEventListener('click', () => {
+      window.location.href = '/addpatients.html';
+    });
+
+    document.getElementById('search-patient').addEventListener('click', () => {
+      window.location.href = '/searchpatients.html';
+    });
+
+    document.getElementById('update-patient').addEventListener('click', () => {
+      window.location.href = '/updatepatient.html';
+    });
+
+    document.getElementById('delete-patient').addEventListener('click', () => {
+      window.location.href = '/delete-patient.html';
+    });
+
+    // Search Function (from search bar)
+    document.getElementById('search-bar-btn').addEventListener('click', async () => {
+      const query = document.querySelector('input[type="text"]').value.trim();
+      if (!query) return alert('Please enter a search term');
+
+      try {
+        const res = await fetch(`/api/patient/search?query=${encodeURIComponent(query)}`);
+        if (!res.ok) throw new Error('Search request failed');
+        const data = await res.json();
+
+        console.log('Search Results:', data);
+        // TODO: Render data to the table or UI here
+      } catch (error) {
+        alert('Error searching patients: ' + error.message);
+      }
+    });
+    document.getElementById('logout-btn').addEventListener('click', () => {
+  // Clear stored user session data
+  localStorage.clear();
+  sessionStorage.clear();
+
+  // Redirect to login page (update URL if different)
+  window.location.href = '/login.html';
+});
+
+  </script>
+  
+</body>
+
+</html>

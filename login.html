@@ -1,0 +1,34 @@
+<!-- public/login.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login | Healthcare</title>
+  <link rel="stylesheet" href="auth.css" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="logo">
+        <div class="logo-icon">➕</div>
+        <h2>Healthcare Portal</h2>
+      </div>
+      <form action="/login" method="POST" class="auth-form">
+        <div class="input-group">
+          <label for="username">Username</label>
+          <input type="text" name="username" id="username" required placeholder="Enter your username" />
+        </div>
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" name="password" id="password" required placeholder="Enter your password" />
+        </div>
+        <button type="submit">Login</button>
+      </form>
+      <p class="switch-text">Don't have an account? <a href="/signup.html">Sign up</a></p>
+    </div>
+  </div>
+</body>
+</html>

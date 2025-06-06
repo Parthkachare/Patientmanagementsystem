@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Search Patient</title>
+  <link rel="stylesheet" href="css/auth.css">
+  <style>
+    body {
+      background-color: #f1f6f9;
+      font-family: "Segoe UI", sans-serif;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .search-container {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 480px;
+      text-align: center;
+    }
+
+    .search-container h2 {
+      margin-bottom: 1.5rem;
+      color: #165c5c;
+    }
+
+    .search-container input {
+      width: 100%;
+      padding: 0.8rem;
+      font-size: 1rem;
+      margin-bottom: 1.2rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+
+    .search-container button {
+      width: 100%;
+      padding: 0.8rem;
+      font-size: 1rem;
+      background-color: #2c9faf;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .search-container button:hover {
+      background-color: #238a96;
+    }
+
+    .results {
+      margin-top: 1.5rem;
+      text-align: left;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="search-container">
+    <h2>🔍 Search Patient Record</h2>
+    <form id="searchForm">
+      <input type="text" id="searchInput" name="search" placeholder="Enter patient name or ID" required />
+      <button type="submit">Search</button>
+    </form>
+    <div class="results" id="searchResults"></div>
+  </div>
+
+  <script>
+    document.getElementById("searchForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const query = document.getElementById("searchInput").value;
+      const response = await fetch(`/api/patients/search?query=${query}`);
+      const data = await response.json();
+
+      const resultsDiv = document.getElementById("searchResults");
+      resultsDiv.innerHTML = '';
+
+      if (data.length === 0) {
+        resultsDiv.innerHTML = "<p>No patients found.</p>";
+      } else {
+        data.forEach(patient => {
+          const p = document.createElement("p");
+          p.textContent = `👤 ${patient.fullName} | 🆔 ${patient.patientId}`;
+          resultsDiv.appendChild(p);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Analytics Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f2f5;
+      color: #333;
+    }
+    header {
+      background: #0d6efd;
+      color: white;
+      padding: 1rem 2rem;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      padding: 2rem;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+    }
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  🩺 Healthcare Analytics Dashboard
+</header>
+
+<div class="dashboard">
+  <div class="card">
+    <h3>Patients Per Condition</h3>
+    <canvas id="conditionChart"></canvas>
+  </div>
+  <div class="card">
+    <h3>Most Prescribed Medications</h3>
+    <canvas id="medicationChart"></canvas>
+  </div>
+  <div class="card">
+    <h3>Average Age per Department</h3>
+    <canvas id="ageChart"></canvas>
+  </div>
+  <div class="card">
+    <h3>Visit Frequency Per Month</h3>
+    <canvas id="visitChart"></canvas>
+  </div>
+</div>
+
+<script>
+  async function loadAnalytics() {
+    try {
+      const res = await fetch('/api/dashboard/analytics');
+      const data = await res.json();
+
+      new Chart(document.getElementById('conditionChart'), {
+        type: 'bar',
+        data: {
+          labels: data.patientsPerCondition.map(d => d._id),
+          datasets: [{
+            label: 'Patients',
+            data: data.patientsPerCondition.map(d => d.count),
+            backgroundColor: '#0d6efd'
+          }]
+        }
+      });
+
+      new Chart(document.getElementById('medicationChart'), {
+        type: 'pie',
+        data: {
+          labels: data.mostPrescribed.map(d => d._id),
+          datasets: [{
+            label: 'Count',
+            data: data.mostPrescribed.map(d => d.count),
+            backgroundColor: ['#00bcd4', '#ffc107', '#4caf50', '#f44336']
+          }]
+        }
+      });
+
+      new Chart(document.getElementById('ageChart'), {
+        type: 'line',
+        data: {
+          labels: data.avgAgePerDept.map(d => d._id),
+          datasets: [{
+            label: 'Avg Age',
+            data: data.avgAgePerDept.map(d => d.avgAge.toFixed(1)),
+            backgroundColor: '#6f42c1',
+            borderColor: '#6f42c1',
+            fill: false
+          }]
+        }
+      });
+
+      new Chart(document.getElementById('visitChart'), {
+        type: 'bar',
+        data: {
+          labels: data.visitsPerMonth.map(d => `${d._id.month}/${d._id.year}`),
+          datasets: [{
+            label: 'Visits',
+            data: data.visitsPerMonth.map(d => d.count),
+            backgroundColor: '#198754'
+          }]
+        }
+      });
+
+    } catch (err) {
+      console.error('Error loading analytics:', err);
+    }
+  }
+
+  loadAnalytics();
+</script>
+
+</body>
+</html>

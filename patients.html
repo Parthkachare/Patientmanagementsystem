@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Patient List</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2rem; background: #f4f7fa; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
+    th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
+    th { background: #0083b0; color: white; }
+    button { padding: 0.4rem 0.8rem; margin-right: 0.5rem; }
+    #pagination { margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h3>Search Patients</h3>
+<form id="searchForm">
+  <input type="text" name="name" placeholder="Name" />
+  <select name="gender">
+    <option value="">-- Gender --</option>
+    <option value="Male">Male</option>
+    <option value="Female">Female</option>
+  </select>
+  <input type="text" name="condition" placeholder="Condition" />
+  <input type="number" name="ageFrom" placeholder="Age From" min="0" />
+  <input type="number" name="ageTo" placeholder="Age To" min="0" />
+  <button type="submit">Search</button>
+</form>
+  
+<div id="resultsContainer"></div>
+
+
+  <h1>Patient List</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Patient ID</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Gender</th>
+        <th>Phone</th>
+      </tr>
+    </thead>
+    <tbody id="patientsBody">
+      <!-- Data will go here -->
+    </tbody>
+  </table>
+
+  <div id="pagination">
+    <button id="prevPage">Previous</button>
+    <span id="pageInfo"></span>
+    <button id="nextPage">Next</button>
+  </div>
+
+  <script>
+    let currentPage = 1;
+    const limit = 5;
+
+    async function fetchPatients(page = 1) {
+      try {
+        const res = await fetch(`/api/patients?limit=${limit}&page=${page}`);
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.error || 'Failed to fetch patients');
+
+        const tbody = document.getElementById('patientsBody');
+        tbody.innerHTML = '';
+
+        data.patients.forEach(patient => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${patient.patientId}</td>
+            <td>${patient.name}</td>
+            <td>${patient.age || ''}</td>
+            <td>${patient.gender || ''}</td>
+            <td>${patient.contactInfo?.phone || ''}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        document.getElementById('pageInfo').textContent = `Page ${data.page} of ${data.totalPages}`;
+        currentPage = data.page;
+
+        // Disable buttons on bounds
+        document.getElementById('prevPage').disabled = currentPage <= 1;
+        document.getElementById('nextPage').disabled = currentPage >= data.totalPages;
+
+      } catch (err) {
+        alert('Error loading patients: ' + err.message);
+      }
+    }
+
+    document.getElementById('prevPage').addEventListener('click', () => {
+      if (currentPage > 1) fetchPatients(currentPage - 1);
+    });
+
+    document.getElementById('nextPage').addEventListener('click', () => {
+      fetchPatients(currentPage + 1);
+    });
+
+    // Initial load
+    fetchPatients(currentPage);
+  </script>
+
+</body>
+
+
+<div id="searchResults"></div>
+
+<script>
+  const form = document.getElementById('searchForm');
+  const resultsDiv = document.getElementById('searchResults');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Clear old results
+    resultsDiv.innerHTML = 'Loading...';
+
+    // Gather form data
+    const formData = new FormData(form);
+    const params = new URLSearchParams();
+    for (const [key, value] of formData.entries()) {
+      if (value.trim() !== '') params.append(key, value.trim());
+    }
+
+    try {
+      const res = await fetch('/api/patients/search?' + params.toString());
+      if (!res.ok) throw new Error('Network response was not OK');
+
+      const data = await res.json();
+
+      if (data.patients.length === 0) {
+        resultsDiv.innerHTML = '<p>No patients found.</p>';
+        return;
+      }
+
+      // Build results table
+      let html = '<table border="1" cellpadding="5" cellspacing="0"><thead><tr><th>Name</th><th>Gender</th><th>Age</th><th>Condition</th></tr></thead><tbody>';
+      data.patients.forEach(p => {
+        html += `<tr>
+          <td>${p.name}</td>
+          <td>${p.gender}</td>
+          <td>${p.age}</td>
+          <td>${p.condition}</td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+
+      resultsDiv.innerHTML = html;
+
+    } catch (error) {
+      resultsDiv.innerHTML = '<p>Error loading patients.</p>';
+      console.error(error);
+    }
+  });
+</script>
+
+</html>

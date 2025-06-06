@@ -1,0 +1,53 @@
+<!-- public/signup.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up | Healthcare</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body class="auth-body">
+
+<body>
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="logo">
+        <div class="logo-icon">➕</div>
+        <h2>Healthcare Portal</h2>
+        <h2>Create Account</h2>
+      </div>
+      <form action="/signup" method="POST" class="auth-form">
+        <div class="input-group">
+          <label for="fullName">Full Name</label>
+          <input type="text" name="fullName" id="fullName" required placeholder="Enter full name" />
+        </div>
+        <div class="input-group">
+          <label for="username">Username</label>
+          <input type="text" name="username" id="username" required placeholder="Choose a username" />
+        </div>
+        <div class="input-group">
+          <label for="email">Email</label>
+          <input type="email" name="email" id="email" required placeholder="Enter email" />
+        </div>
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" name="password" id="password" required placeholder="Choose a password" />
+        </div>
+        <div class="input-group">
+          <label for="role">Role</label>
+          <select name="role" id="role" required>
+            <option value="" disabled selected>Select role</option>
+            <option value="admin">Admin</option>
+            <option value="doctor">Doctor</option>
+          </select>
+        </div>
+        <button type="submit">Sign Up</button>
+      </form>
+      <p class="switch-text">Already have an account? <a href="/login.html">Log in</a></p>
+    </div>
+  </div>
+</body>
+</html>
