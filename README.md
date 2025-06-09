@@ -67,7 +67,7 @@ node seedPatients.js
 node server.js
 ```
 
-Server will run on [http://localhost:3000](http://localhost:3000)
+Server will run on [http://localhost:5000](http://localhost:5000)
 
 ---
 
